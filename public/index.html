@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SplitCheque - Bill Splitting Made Easy</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💰 SplitCheque</h1>
+            <p>Split bills and settle debts the smart way</p>
+        </header>
+
+        <main>
+            <div class="people-section">
+                <h2>People</h2>
+                <form id="person-form">
+                    <div class="person-input">
+                        <input type="text" id="person-name" placeholder="Enter person's name" required>
+                        <button type="submit">Add Person</button>
+                    </div>
+                </form>
+                <div id="people-container">
+                    <p class="no-people">No people added yet. Add people first!</p>
+                </div>
+            </div>
+
+            <div class="input-section">
+                <h2>Add Expenses</h2>
+                <form id="expense-form">
+                    <div class="form-group">
+                        <label for="expense-description">Description</label>
+                        <input type="text" id="expense-description" placeholder="e.g., Dinner at Restaurant" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="expense-amount">Amount ($)</label>
+                        <input type="number" id="expense-amount" step="0.01" min="0" placeholder="0.00" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="paid-by">Paid By</label>
+                        <select id="paid-by" required>
+                            <option value="">Select who paid</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Participants</label>
+                        <div id="participants-checkboxes" class="checkbox-group">
+                            <p class="no-people-message">Add people above first</p>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" id="add-expense-btn" disabled>Add Expense</button>
+                </form>
+            </div>
+
+            <div class="expenses-list">
+                <h2>Expenses</h2>
+                <div id="expenses-container">
+                    <p class="no-expenses">No expenses added yet. Add your first expense above!</p>
+                </div>
+            </div>
+
+            <!-- Edit Expense Modal -->
+            <div id="edit-modal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Edit Expense</h2>
+                        <span class="close" onclick="app.closeEditModal()">&times;</span>
+                    </div>
+                    <form id="edit-expense-form">
+                        <div class="form-group">
+                            <label for="edit-expense-description">Description</label>
+                            <input type="text" id="edit-expense-description" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="edit-expense-amount">Amount ($)</label>
+                            <input type="number" id="edit-expense-amount" step="0.01" min="0" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="edit-paid-by">Paid By</label>
+                            <select id="edit-paid-by" required>
+                                <option value="">Select who paid</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Participants</label>
+                            <div id="edit-participants-checkboxes" class="checkbox-group">
+                            </div>
+                        </div>
+                        
+                        <div class="modal-buttons">
+                            <button type="submit" class="save-btn">Save Changes</button>
+                            <button type="button" class="cancel-btn" onclick="app.closeEditModal()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button id="calculate-btn" class="calculate-btn" disabled>Calculate Settlement</button>
+                <button id="clear-btn" class="clear-btn">Clear All</button>
+            </div>
+
+            <div id="results-section" class="results-section" style="display: none;">
+                <h2>Settlement Results</h2>
+                
+                <div class="summary-cards">
+                    <div class="summary-card">
+                        <h3>Total Expenses</h3>
+                        <p id="total-expenses">$0.00</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Per Person Share</h3>
+                        <p id="per-person-share">$0.00</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Number of Transactions</h3>
+                        <p id="num-transactions">0</p>
+                    </div>
+                </div>
+
+                <div class="balances">
+                    <h3>Individual Balances</h3>
+                    <div id="balances-container"></div>
+                </div>
+
+                <div class="transactions">
+                    <h3>Optimal Settlement Transactions</h3>
+                    <div id="transactions-container"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
