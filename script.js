@@ -17,6 +17,8 @@ class SplitCheque {
         const editPaidByInput = document.getElementById('edit-paid-by');
         const participantModeInputs = document.querySelectorAll('input[name="participant-mode"]');
         const editParticipantModeInputs = document.querySelectorAll('input[name="edit-participant-mode"]');
+        const selectAllParticipants = document.getElementById('select-all-participants');
+        const selectAllEditParticipants = document.getElementById('select-all-edit-participants');
 
         personForm.addEventListener('submit', (e) => this.handleAddPerson(e));
         expenseForm.addEventListener('submit', (e) => this.handleAddExpense(e));
@@ -41,6 +43,10 @@ class SplitCheque {
         editParticipantModeInputs.forEach(input => {
             input.addEventListener('change', (e) => this.handleEditParticipantModeChange(e));
         });
+        
+        // Select all participants functionality
+        selectAllParticipants.addEventListener('change', (e) => this.handleSelectAllParticipants(e));
+        selectAllEditParticipants.addEventListener('change', (e) => this.handleSelectAllEditParticipants(e));
         
         // Close suggestions when clicking outside
         document.addEventListener('click', (e) => {
@@ -222,6 +228,17 @@ class SplitCheque {
         `).join('');
         
         container.innerHTML = checkboxes;
+        
+        // Add event listeners to individual checkboxes
+        const participantCheckboxes = document.querySelectorAll('input[name="participants"]');
+        participantCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', () => this.updateSelectAllState('main'));
+        });
+        
+        // Update select all checkbox state
+        const selectAllCheckbox = document.getElementById('select-all-participants');
+        selectAllCheckbox.checked = defaultChecked;
+        selectAllCheckbox.indeterminate = false;
     }
 
     updateEditParticipantCheckboxes(mode = 'include') {
@@ -243,6 +260,17 @@ class SplitCheque {
         `).join('');
         
         editContainer.innerHTML = editCheckboxes;
+        
+        // Add event listeners to individual checkboxes
+        const editParticipantCheckboxes = document.querySelectorAll('input[name="edit-participants"]');
+        editParticipantCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', () => this.updateSelectAllState('edit'));
+        });
+        
+        // Update select all checkbox state
+        const selectAllEditCheckbox = document.getElementById('select-all-edit-participants');
+        selectAllEditCheckbox.checked = defaultChecked;
+        selectAllEditCheckbox.indeterminate = false;
     }
 
     getSelectedParticipants() {
@@ -389,6 +417,9 @@ class SplitCheque {
             });
         }
         
+        // Update select all checkbox state
+        this.updateSelectAllState('edit');
+        
         // Show modal
         document.getElementById('edit-modal').style.display = 'flex';
     }
@@ -405,8 +436,12 @@ class SplitCheque {
         document.querySelector('input[name="participant-mode"][value="include"]').checked = true;
         this.updateParticipantCheckboxes('include');
         
+        // Reset select all checkbox
+        document.getElementById('select-all-participants').checked = true;
+        document.getElementById('select-all-participants').indeterminate = false;
+        
         // Hide autocomplete suggestions
-        this.hidePaidBySuggestions();
+        this.hidePaidBySuggestions('paid-by-suggestions');
     }
 
     renderExpenses() {
@@ -797,6 +832,53 @@ class SplitCheque {
                 item.classList.remove('active');
             }
         });
+    }
+
+    handleSelectAllParticipants(e) {
+        const isChecked = e.target.checked;
+        const checkboxes = document.querySelectorAll('input[name="participants"]');
+        
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = isChecked;
+        });
+    }
+
+    handleSelectAllEditParticipants(e) {
+        const isChecked = e.target.checked;
+        const checkboxes = document.querySelectorAll('input[name="edit-participants"]');
+        
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = isChecked;
+        });
+    }
+
+    updateSelectAllState(containerType = 'main') {
+        const selectAllCheckbox = containerType === 'main' ? 
+            document.getElementById('select-all-participants') : 
+            document.getElementById('select-all-edit-participants');
+        
+        const checkboxes = containerType === 'main' ? 
+            document.querySelectorAll('input[name="participants"]') : 
+            document.querySelectorAll('input[name="edit-participants"]');
+        
+        if (checkboxes.length === 0) {
+            selectAllCheckbox.checked = false;
+            selectAllCheckbox.indeterminate = false;
+            return;
+        }
+        
+        const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+        
+        if (checkedCount === 0) {
+            selectAllCheckbox.checked = false;
+            selectAllCheckbox.indeterminate = false;
+        } else if (checkedCount === checkboxes.length) {
+            selectAllCheckbox.checked = true;
+            selectAllCheckbox.indeterminate = false;
+        } else {
+            selectAllCheckbox.checked = false;
+            selectAllCheckbox.indeterminate = true;
+        }
     }
 }
 
