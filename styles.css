@@ -431,6 +431,7 @@ button:disabled {
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(72, 187, 120, 0.3);
     margin-top: 15px;
+    cursor: pointer;
 }
 
 .donate-btn:hover {
@@ -439,18 +440,6 @@ button:disabled {
     box-shadow: 0 6px 20px rgba(72, 187, 120, 0.4);
     text-decoration: none;
     color: white;
-}
-
-.donate-btn.coming-soon {
-    background: linear-gradient(135deg, #a0aec0 0%, #718096 100%);
-    cursor: default;
-    box-shadow: 0 4px 15px rgba(160, 174, 192, 0.3);
-}
-
-.donate-btn.coming-soon:hover {
-    background: linear-gradient(135deg, #a0aec0 0%, #718096 100%);
-    transform: none;
-    box-shadow: 0 4px 15px rgba(160, 174, 192, 0.3);
 }
 
 .donate-icon {
