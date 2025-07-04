@@ -15,8 +15,6 @@ class SplitCheque {
         const clearBtn = document.getElementById('clear-btn');
         const paidByInput = document.getElementById('paid-by');
         const editPaidByInput = document.getElementById('edit-paid-by');
-        const participantModeInputs = document.querySelectorAll('input[name="participant-mode"]');
-        const editParticipantModeInputs = document.querySelectorAll('input[name="edit-participant-mode"]');
         const selectAllParticipants = document.getElementById('select-all-participants');
         const selectAllEditParticipants = document.getElementById('select-all-edit-participants');
 
@@ -35,18 +33,9 @@ class SplitCheque {
         editPaidByInput.addEventListener('keydown', (e) => this.handlePaidByKeydown(e, 'edit-paid-by-suggestions'));
         editPaidByInput.addEventListener('blur', () => this.hidePaidBySuggestions('edit-paid-by-suggestions'));
         
-        // Participant mode change
-        participantModeInputs.forEach(input => {
-            input.addEventListener('change', (e) => this.handleParticipantModeChange(e));
-        });
-        
-        editParticipantModeInputs.forEach(input => {
-            input.addEventListener('change', (e) => this.handleEditParticipantModeChange(e));
-        });
-        
         // Select all participants functionality
-        selectAllParticipants.addEventListener('change', (e) => this.handleSelectAllParticipants(e));
-        selectAllEditParticipants.addEventListener('change', (e) => this.handleSelectAllEditParticipants(e));
+        selectAllParticipants.addEventListener('click', () => this.handleSelectAllParticipants());
+        selectAllEditParticipants.addEventListener('click', () => this.handleSelectAllEditParticipants());
         
         // Close suggestions when clicking outside
         document.addEventListener('click', (e) => {
@@ -157,16 +146,6 @@ class SplitCheque {
         document.getElementById(suggestionContainerId).style.display = 'none';
     }
 
-    handleParticipantModeChange(e) {
-        const mode = e.target.value;
-        this.updateParticipantCheckboxes(mode);
-    }
-
-    handleEditParticipantModeChange(e) {
-        const mode = e.target.value;
-        this.updateEditParticipantCheckboxes(mode);
-    }
-
     removePerson(name) {
         if (confirm(`Remove ${name} from the list? This will also remove them from all expenses.`)) {
             this.people = this.people.filter(person => person !== name);
@@ -202,14 +181,13 @@ class SplitCheque {
 
     updateSelectors() {
         // Update participants checkboxes
-        const currentMode = document.querySelector('input[name="participant-mode"]:checked').value;
-        this.updateParticipantCheckboxes(currentMode);
+        this.updateParticipantCheckboxes();
         
         // Update add expense button state
         document.getElementById('add-expense-btn').disabled = this.people.length === 0;
     }
 
-    updateParticipantCheckboxes(mode = 'include') {
+    updateParticipantCheckboxes() {
         const container = document.getElementById('participants-checkboxes');
         
         if (this.people.length === 0) {
@@ -217,12 +195,10 @@ class SplitCheque {
             return;
         }
         
-        // For include mode, check all by default; for exclude mode, check none by default
-        const defaultChecked = mode === 'include';
-        
+        // Default to all checked
         const checkboxes = this.people.map(person => `
             <div class="checkbox-item">
-                <input type="checkbox" id="participant-${person}" name="participants" value="${person}" ${defaultChecked ? 'checked' : ''}>
+                <input type="checkbox" id="participant-${person}" name="participants" value="${person}" checked>
                 <label for="participant-${person}">${person}</label>
             </div>
         `).join('');
@@ -232,16 +208,14 @@ class SplitCheque {
         // Add event listeners to individual checkboxes
         const participantCheckboxes = document.querySelectorAll('input[name="participants"]');
         participantCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', () => this.updateSelectAllState('main'));
+            checkbox.addEventListener('change', () => this.updateSelectAllButton('select-all-participants'));
         });
         
-        // Update select all checkbox state
-        const selectAllCheckbox = document.getElementById('select-all-participants');
-        selectAllCheckbox.checked = defaultChecked;
-        selectAllCheckbox.indeterminate = false;
+        // Update select all button
+        this.updateSelectAllButton('select-all-participants');
     }
 
-    updateEditParticipantCheckboxes(mode = 'include') {
+    updateEditParticipantCheckboxes() {
         const editContainer = document.getElementById('edit-participants-checkboxes');
         
         if (this.people.length === 0) {
@@ -249,12 +223,10 @@ class SplitCheque {
             return;
         }
         
-        // For include mode, check all by default; for exclude mode, check none by default
-        const defaultChecked = mode === 'include';
-        
+        // Default to all checked
         const editCheckboxes = this.people.map(person => `
             <div class="checkbox-item">
-                <input type="checkbox" id="edit-participant-${person}" name="edit-participants" value="${person}" ${defaultChecked ? 'checked' : ''}>
+                <input type="checkbox" id="edit-participant-${person}" name="edit-participants" value="${person}" checked>
                 <label for="edit-participant-${person}">${person}</label>
             </div>
         `).join('');
@@ -264,13 +236,11 @@ class SplitCheque {
         // Add event listeners to individual checkboxes
         const editParticipantCheckboxes = document.querySelectorAll('input[name="edit-participants"]');
         editParticipantCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', () => this.updateSelectAllState('edit'));
+            checkbox.addEventListener('change', () => this.updateSelectAllButton('select-all-edit-participants'));
         });
         
-        // Update select all checkbox state
-        const selectAllEditCheckbox = document.getElementById('select-all-edit-participants');
-        selectAllEditCheckbox.checked = defaultChecked;
-        selectAllEditCheckbox.indeterminate = false;
+        // Update select all button
+        this.updateSelectAllButton('select-all-edit-participants');
     }
 
     getSelectedParticipants() {
@@ -289,25 +259,15 @@ class SplitCheque {
         const description = document.getElementById('expense-description').value;
         const amount = parseFloat(document.getElementById('expense-amount').value);
         const paidBy = document.getElementById('paid-by').value;
-        const mode = document.querySelector('input[name="participant-mode"]:checked').value;
+        const participants = this.getSelectedParticipants();
         
         if (!paidBy || !this.people.includes(paidBy)) {
             alert('Please select a valid person who paid');
             return;
         }
         
-        let participants;
-        if (mode === 'include') {
-            // Include mode: get checked participants
-            participants = this.getSelectedParticipants();
-        } else {
-            // Exclude mode: get all people except unchecked ones
-            const excludedParticipants = this.getSelectedParticipants();
-            participants = this.people.filter(person => !excludedParticipants.includes(person));
-        }
-        
         if (participants.length === 0) {
-            alert('Please ensure at least one participant is selected');
+            alert('Please select at least one participant');
             return;
         }
         
@@ -336,25 +296,15 @@ class SplitCheque {
         const description = document.getElementById('edit-expense-description').value;
         const amount = parseFloat(document.getElementById('edit-expense-amount').value);
         const paidBy = document.getElementById('edit-paid-by').value;
-        const mode = document.querySelector('input[name="edit-participant-mode"]:checked').value;
+        const participants = this.getSelectedEditParticipants();
         
         if (!paidBy || !this.people.includes(paidBy)) {
             alert('Please select a valid person who paid');
             return;
         }
         
-        let participants;
-        if (mode === 'include') {
-            // Include mode: get checked participants
-            participants = this.getSelectedEditParticipants();
-        } else {
-            // Exclude mode: get all people except unchecked ones
-            const excludedParticipants = this.getSelectedEditParticipants();
-            participants = this.people.filter(person => !excludedParticipants.includes(person));
-        }
-        
         if (participants.length === 0) {
-            alert('Please ensure at least one participant is selected');
+            alert('Please select at least one participant');
             return;
         }
         
@@ -392,33 +342,16 @@ class SplitCheque {
         document.getElementById('edit-paid-by').value = expense.paidBy;
         
         // Set up the edit participant checkboxes
-        this.updateEditParticipantCheckboxes('include');
+        this.updateEditParticipantCheckboxes();
         
-        // Set the appropriate mode and check/uncheck participants
-        const allPeople = this.people;
+        // Set the participants based on the expense
         const participantsSet = new Set(expense.participants);
+        document.querySelectorAll('input[name="edit-participants"]').forEach(checkbox => {
+            checkbox.checked = participantsSet.has(checkbox.value);
+        });
         
-        // Determine if this is more like include or exclude mode
-        const includedCount = expense.participants.length;
-        const totalCount = allPeople.length;
-        
-        if (includedCount >= totalCount / 2) {
-            // More people included than excluded - use include mode
-            document.querySelector('input[name="edit-participant-mode"][value="include"]').checked = true;
-            document.querySelectorAll('input[name="edit-participants"]').forEach(checkbox => {
-                checkbox.checked = participantsSet.has(checkbox.value);
-            });
-        } else {
-            // More people excluded than included - use exclude mode
-            document.querySelector('input[name="edit-participant-mode"][value="exclude"]').checked = true;
-            this.updateEditParticipantCheckboxes('exclude');
-            document.querySelectorAll('input[name="edit-participants"]').forEach(checkbox => {
-                checkbox.checked = !participantsSet.has(checkbox.value);
-            });
-        }
-        
-        // Update select all checkbox state
-        this.updateSelectAllState('edit');
+        // Update select all button
+        this.updateSelectAllButton('select-all-edit-participants');
         
         // Show modal
         document.getElementById('edit-modal').style.display = 'flex';
@@ -432,13 +365,8 @@ class SplitCheque {
         document.getElementById('expense-form').reset();
         document.getElementById('paid-by').value = '';
         
-        // Reset to include mode and update checkboxes
-        document.querySelector('input[name="participant-mode"][value="include"]').checked = true;
-        this.updateParticipantCheckboxes('include');
-        
-        // Reset select all checkbox
-        document.getElementById('select-all-participants').checked = true;
-        document.getElementById('select-all-participants').indeterminate = false;
+        // Update checkboxes (all selected by default)
+        this.updateParticipantCheckboxes();
         
         // Hide autocomplete suggestions
         this.hidePaidBySuggestions('paid-by-suggestions');
@@ -473,9 +401,6 @@ class SplitCheque {
         // Clear the edit form
         document.getElementById('edit-expense-form').reset();
         document.getElementById('edit-paid-by').value = '';
-        
-        // Reset to include mode
-        document.querySelector('input[name="edit-participant-mode"][value="include"]').checked = true;
         
         // Hide autocomplete suggestions
         this.hidePaidBySuggestions('edit-paid-by-suggestions');
@@ -834,50 +759,58 @@ class SplitCheque {
         });
     }
 
-    handleSelectAllParticipants(e) {
-        const isChecked = e.target.checked;
+    handleSelectAllParticipants() {
         const checkboxes = document.querySelectorAll('input[name="participants"]');
+        const button = document.getElementById('select-all-participants');
         
+        // Check if all are currently selected
+        const allSelected = Array.from(checkboxes).every(cb => cb.checked);
+        
+        // Toggle all checkboxes
         checkboxes.forEach(checkbox => {
-            checkbox.checked = isChecked;
+            checkbox.checked = !allSelected;
         });
+        
+        // Update button text and style
+        this.updateSelectAllButton('select-all-participants');
     }
 
-    handleSelectAllEditParticipants(e) {
-        const isChecked = e.target.checked;
+    handleSelectAllEditParticipants() {
         const checkboxes = document.querySelectorAll('input[name="edit-participants"]');
+        const button = document.getElementById('select-all-edit-participants');
         
+        // Check if all are currently selected
+        const allSelected = Array.from(checkboxes).every(cb => cb.checked);
+        
+        // Toggle all checkboxes
         checkboxes.forEach(checkbox => {
-            checkbox.checked = isChecked;
+            checkbox.checked = !allSelected;
         });
+        
+        // Update button text and style
+        this.updateSelectAllButton('select-all-edit-participants');
     }
 
-    updateSelectAllState(containerType = 'main') {
-        const selectAllCheckbox = containerType === 'main' ? 
-            document.getElementById('select-all-participants') : 
-            document.getElementById('select-all-edit-participants');
-        
-        const checkboxes = containerType === 'main' ? 
+    updateSelectAllButton(buttonId) {
+        const button = document.getElementById(buttonId);
+        const checkboxes = buttonId === 'select-all-participants' ? 
             document.querySelectorAll('input[name="participants"]') : 
             document.querySelectorAll('input[name="edit-participants"]');
         
         if (checkboxes.length === 0) {
-            selectAllCheckbox.checked = false;
-            selectAllCheckbox.indeterminate = false;
+            button.textContent = 'Select All';
+            button.classList.remove('deselect');
             return;
         }
         
-        const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+        const allSelected = Array.from(checkboxes).every(cb => cb.checked);
         
-        if (checkedCount === 0) {
-            selectAllCheckbox.checked = false;
-            selectAllCheckbox.indeterminate = false;
-        } else if (checkedCount === checkboxes.length) {
-            selectAllCheckbox.checked = true;
-            selectAllCheckbox.indeterminate = false;
+        if (allSelected) {
+            button.textContent = 'Deselect All';
+            button.classList.add('deselect');
         } else {
-            selectAllCheckbox.checked = false;
-            selectAllCheckbox.indeterminate = true;
+            button.textContent = 'Select All';
+            button.classList.remove('deselect');
         }
     }
 }

@@ -54,21 +54,10 @@
                     
                     <div class="form-group">
                         <label>Participants</label>
-                        <div class="participants-mode">
-                            <label class="mode-switch">
-                                <input type="radio" name="participant-mode" value="include" checked>
-                                <span>Include All (default)</span>
-                            </label>
-                            <label class="mode-switch">
-                                <input type="radio" name="participant-mode" value="exclude">
-                                <span>Exclude Some</span>
-                            </label>
-                        </div>
                         <div class="participants-controls">
-                            <label class="select-all-control">
-                                <input type="checkbox" id="select-all-participants" checked>
-                                <span>Select All</span>
-                            </label>
+                            <button type="button" id="select-all-participants" class="select-all-btn">
+                                Select All
+                            </button>
                         </div>
                         <div id="participants-checkboxes" class="checkbox-group">
                             <p class="no-people-message">Add people above first</p>
@@ -113,21 +102,10 @@
                         
                         <div class="form-group">
                             <label>Participants</label>
-                            <div class="participants-mode">
-                                <label class="mode-switch">
-                                    <input type="radio" name="edit-participant-mode" value="include" checked>
-                                    <span>Include All (default)</span>
-                                </label>
-                                <label class="mode-switch">
-                                    <input type="radio" name="edit-participant-mode" value="exclude">
-                                    <span>Exclude Some</span>
-                                </label>
-                            </div>
                             <div class="participants-controls">
-                                <label class="select-all-control">
-                                    <input type="checkbox" id="select-all-edit-participants" checked>
-                                    <span>Select All</span>
-                                </label>
+                                <button type="button" id="select-all-edit-participants" class="select-all-btn">
+                                    Select All
+                                </button>
                             </div>
                             <div id="edit-participants-checkboxes" class="checkbox-group">
                             </div>
