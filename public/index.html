@@ -2,24 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <meta name="theme-color" content="#667eea">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SplitCheque - Bill Splitting Made Easy</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <header id="header">
-            <div class="section-anchor" id="top"></div>
+        <header>
             <h1>💰 SplitCheque</h1>
             <p>Split bills and settle debts the smart way</p>
         </header>
 
         <main>
             <div class="people-section">
-                <div class="section-anchor" id="people"></div>
                 <h2>People</h2>
                 <form id="person-form">
                     <div class="person-input">
@@ -33,7 +28,6 @@
             </div>
 
             <div class="input-section">
-                <div class="section-anchor" id="expenses"></div>
                 <h2>Add Expenses</h2>
                 <form id="expense-form">
                     <div class="form-group">
@@ -48,22 +42,13 @@
                     
                     <div class="form-group">
                         <label for="paid-by">Paid By</label>
-                        <input type="text" id="paid-by" placeholder="Start typing a name..." required autocomplete="off">
-                        <div id="paid-by-suggestions" class="suggestions-dropdown"></div>
+                        <select id="paid-by" required>
+                            <option value="">Select who paid</option>
+                        </select>
                     </div>
                     
                     <div class="form-group">
                         <label>Participants</label>
-                        <div class="participants-mode">
-                            <label class="mode-switch">
-                                <input type="radio" name="participant-mode" value="include" checked>
-                                <span>Include All (default)</span>
-                            </label>
-                            <label class="mode-switch">
-                                <input type="radio" name="participant-mode" value="exclude">
-                                <span>Exclude Some</span>
-                            </label>
-                        </div>
                         <div id="participants-checkboxes" class="checkbox-group">
                             <p class="no-people-message">Add people above first</p>
                         </div>
@@ -74,7 +59,6 @@
             </div>
 
             <div class="expenses-list">
-                <div class="section-anchor" id="expenses-list"></div>
                 <h2>Expenses</h2>
                 <div id="expenses-container">
                     <p class="no-expenses">No expenses added yet. Add your first expense above!</p>
@@ -101,22 +85,13 @@
                         
                         <div class="form-group">
                             <label for="edit-paid-by">Paid By</label>
-                            <input type="text" id="edit-paid-by" placeholder="Start typing a name..." required autocomplete="off">
-                            <div id="edit-paid-by-suggestions" class="suggestions-dropdown"></div>
+                            <select id="edit-paid-by" required>
+                                <option value="">Select who paid</option>
+                            </select>
                         </div>
                         
                         <div class="form-group">
                             <label>Participants</label>
-                            <div class="participants-mode">
-                                <label class="mode-switch">
-                                    <input type="radio" name="edit-participant-mode" value="include" checked>
-                                    <span>Include All (default)</span>
-                                </label>
-                                <label class="mode-switch">
-                                    <input type="radio" name="edit-participant-mode" value="exclude">
-                                    <span>Exclude Some</span>
-                                </label>
-                            </div>
                             <div id="edit-participants-checkboxes" class="checkbox-group">
                             </div>
                         </div>
@@ -135,7 +110,6 @@
             </div>
 
             <div id="results-section" class="results-section" style="display: none;">
-                <div class="section-anchor" id="results"></div>
                 <h2>Settlement Results</h2>
                 
                 <div class="summary-cards">
@@ -190,33 +164,6 @@
             <p>&copy; 2025 SplitCheque by Lawrence IP. Made with ❤️ for splitting bills fairly.</p>
         </div>
     </footer>
-
-    <!-- Floating Navigation for Mobile -->
-    <nav class="floating-nav" id="floating-nav">
-        <div class="nav-items">
-            <a href="#top" class="nav-item" data-section="top">
-                <div class="nav-item-icon">🏠</div>
-                <div class="nav-item-text">Home</div>
-            </a>
-            <a href="#people" class="nav-item" data-section="people">
-                <div class="nav-item-icon">👥</div>
-                <div class="nav-item-text">People</div>
-            </a>
-            <a href="#expenses" class="nav-item" data-section="expenses">
-                <div class="nav-item-icon">💰</div>
-                <div class="nav-item-text">Expenses</div>
-            </a>
-            <a href="#results" class="nav-item" data-section="results">
-                <div class="nav-item-icon">📊</div>
-                <div class="nav-item-text">Results</div>
-            </a>
-        </div>
-    </nav>
-
-    <!-- Scroll to Top Button -->
-    <button class="scroll-top" id="scroll-top" title="Scroll to top">
-        ↑
-    </button>
 
     <script src="script.js"></script>
 </body>

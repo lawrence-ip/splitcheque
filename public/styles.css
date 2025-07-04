@@ -2,13 +2,6 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent; /* Remove blue tap highlight on mobile */
-}
-
-html {
-    -webkit-text-size-adjust: 100%; /* Prevent text scaling on orientation change */
-    -ms-text-size-adjust: 100%;
-    scroll-behavior: smooth;
 }
 
 body {
@@ -16,54 +9,49 @@ body {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
     color: #333;
-    font-size: 16px; /* Base font size for better mobile scaling */
-    line-height: 1.5;
 }
 
 .container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 15px;
-    min-height: 100vh;
+    padding: 20px;
 }
 
 header {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 40px;
     color: white;
-    padding: 10px 0;
 }
 
 header h1 {
-    font-size: clamp(2rem, 5vw, 3rem); /* Responsive font size */
+    font-size: 3rem;
     margin-bottom: 10px;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
 
 header p {
-    font-size: clamp(1rem, 3vw, 1.2rem); /* Responsive font size */
+    font-size: 1.2rem;
     opacity: 0.9;
 }
 
 main {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    gap: clamp(15px, 3vw, 30px); /* Responsive gap */
+    gap: 30px;
     margin-bottom: 30px;
 }
 
 .people-section, .input-section, .expenses-list {
     background: white;
-    padding: clamp(20px, 4vw, 30px); /* Responsive padding */
+    padding: 30px;
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    min-height: fit-content;
 }
 
 .people-section h2, .input-section h2, .expenses-list h2 {
     margin-bottom: 20px;
     color: #4a5568;
-    font-size: clamp(1.2rem, 3vw, 1.5rem); /* Responsive font size */
+    font-size: 1.5rem;
 }
 
 .person-input {
@@ -172,16 +160,9 @@ main {
     padding: 12px;
     border: 2px solid #e2e8f0;
     border-radius: 8px;
-    font-size: 16px; /* Prevents zoom on iOS */
+    font-size: 1rem;
     background: white;
     transition: border-color 0.3s ease;
-    -webkit-appearance: none; /* Remove iOS styling */
-    appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    background-size: 16px;
-    padding-right: 40px;
 }
 
 .form-group select:focus {
@@ -205,10 +186,8 @@ main {
     padding: 12px;
     border: 2px solid #e2e8f0;
     border-radius: 8px;
-    font-size: 16px; /* Prevents zoom on iOS */
+    font-size: 1rem;
     transition: border-color 0.3s ease;
-    -webkit-appearance: none; /* Remove iOS styling */
-    appearance: none;
 }
 
 .form-group input:focus {
@@ -222,12 +201,10 @@ button {
     border: none;
     padding: 12px 24px;
     border-radius: 8px;
-    font-size: 16px; /* Consistent with inputs */
+    font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-    touch-action: manipulation; /* Better touch response */
-    min-height: 44px; /* iOS recommended touch target */
 }
 
 button:hover {
@@ -662,367 +639,54 @@ button:disabled {
     padding: 15px 30px;
 }
 
-/* Autocomplete Suggestions */
-.suggestions-dropdown {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    max-height: 200px;
-    overflow-y: auto;
-    display: none;
-}
-
-.suggestion-item {
-    padding: 12px;
-    cursor: pointer;
-    border-bottom: 1px solid #f7fafc;
-    transition: background-color 0.2s ease;
-}
-
-.suggestion-item:hover,
-.suggestion-item.active {
-    background-color: #f7fafc;
-}
-
-.suggestion-item:last-child {
-    border-bottom: none;
-}
-
-/* Participant Mode Switches */
-.participants-mode {
-    display: flex;
-    gap: 20px;
-    margin-bottom: 15px;
-    padding: 10px;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-}
-
-.mode-switch {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    color: #4a5568;
-}
-
-.mode-switch input[type="radio"] {
-    margin: 0;
-    accent-color: #667eea;
-}
-
-.mode-switch span {
-    user-select: none;
-}
-
-/* Form group positioning for autocomplete */
-.form-group {
-    position: relative;
-}
-
-/* Floating Navigation for Mobile */
-.floating-nav {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-radius: 25px;
-    padding: 8px 12px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    z-index: 1000;
-    display: none;
-    transition: all 0.3s ease;
-}
-
-.floating-nav.visible {
-    display: flex;
-    animation: slideUp 0.3s ease;
-}
-
-@keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateX(-50%) translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-    }
-}
-
-.nav-items {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-}
-
-.nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 8px 12px;
-    border-radius: 20px;
-    text-decoration: none;
-    color: #4a5568;
-    font-size: 10px;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    cursor: pointer;
-    min-width: 60px;
-}
-
-.nav-item:hover {
-    background: rgba(102, 126, 234, 0.1);
-    color: #667eea;
-    transform: translateY(-2px);
-}
-
-.nav-item.active {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-}
-
-.nav-item-icon {
-    font-size: 18px;
-    margin-bottom: 2px;
-}
-
-.nav-item-text {
-    font-size: 9px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-/* Scroll to top button */
-.scroll-top {
-    position: fixed;
-    bottom: 90px;
-    right: 20px;
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    border-radius: 50%;
-    font-size: 20px;
-    cursor: pointer;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-    z-index: 999;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-}
-
-.scroll-top:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-}
-
-.scroll-top.visible {
-    opacity: 1;
-    visibility: visible;
-}
-
-/* Section anchors for smooth scrolling */
-.section-anchor {
-    position: relative;
-    top: -20px;
-    visibility: hidden;
-}
-
-/* Tablet breakpoint */
 @media (max-width: 1024px) {
     main {
         grid-template-columns: 1fr 1fr;
-        gap: 20px;
     }
     
     .people-section {
         grid-column: 1 / -1;
     }
-    
-    .container {
-        padding: 15px;
-    }
 }
 
-/* Mobile breakpoint */
 @media (max-width: 768px) {
     main {
         grid-template-columns: 1fr;
-        gap: 20px;
     }
     
     .people-section {
         grid-column: auto;
     }
     
-    .container {
-        padding: 10px;
-    }
-    
-    .people-section, .input-section, .expenses-list {
-        padding: 20px 15px;
-    }
-    
-    header {
-        margin-bottom: 20px;
+    header h1 {
+        font-size: 2rem;
     }
     
     .actions {
         flex-direction: column;
         align-items: center;
-        gap: 15px;
     }
     
     .calculate-btn, .clear-btn {
         width: 100%;
         max-width: 300px;
-        padding: 15px;
-        font-size: 16px;
     }
     
     .summary-cards {
         grid-template-columns: 1fr;
-        gap: 15px;
     }
     
     .checkbox-group {
         grid-template-columns: 1fr;
-        gap: 8px;
     }
     
     .footer-content {
         grid-template-columns: 1fr;
-        gap: 25px;
+        gap: 30px;
         text-align: center;
     }
     
     .footer-section {
-        padding: 0 5px;
-    }
-    
-    .modal-content {
-        width: 95%;
-        margin: 10px;
-    }
-    
-    .person-input {
-        flex-direction: column;
-        gap: 10px;
-    }
-    
-    .person-input button {
-        width: 100%;
-    }
-    
-    .floating-nav {
-        display: flex;
-        bottom: 15px;
-        left: 15px;
-        right: 15px;
-        transform: none;
-        border-radius: 20px;
-        padding: 10px 15px;
-        justify-content: space-between;
-    }
-    
-    .nav-items {
-        width: 100%;
-        justify-content: space-between;
-    }
-    
-    .nav-item {
-        flex: 1;
-        padding: 10px 8px;
-        min-width: auto;
-    }
-    
-    .nav-item-icon {
-        font-size: 16px;
-    }
-    
-    .nav-item-text {
-        font-size: 8px;
-    }
-    
-    .scroll-top {
-        bottom: 85px;
-        right: 15px;
-        width: 45px;
-        height: 45px;
-        font-size: 18px;
-    }
-    
-    /* Add padding to main content to prevent overlap with floating nav */
-    main {
-        padding-bottom: 100px;
-    }
-    
-    .footer {
-        margin-bottom: 80px;
-    }
-}
-
-@media (max-width: 480px) {
-    .container {
-        padding: 5px;
-    }
-    
-    .people-section, .input-section, .expenses-list {
-        padding: 15px 10px;
-        margin: 5px 0;
-    }
-    
-    header h1 {
-        font-size: 1.8rem;
-    }
-    
-    header p {
-        font-size: 0.9rem;
-    }
-    
-    .summary-card {
-        padding: 15px;
-    }
-    
-    .summary-card h3 {
-        font-size: 0.9rem;
-    }
-    
-    .summary-card p {
-        font-size: 1.2rem;
-    }
-    
-    .footer {
-        padding: 20px 0 10px;
-    }
-    
-    .footer-content {
-        gap: 20px;
-    }
-}
-
-/* Hide floating nav on desktop */
-@media (min-width: 1024px) {
-    .floating-nav {
-        display: none !important;
-    }
-    
-    .scroll-top {
-        bottom: 30px;
-        right: 30px;
+        padding: 0 10px;
     }
 }

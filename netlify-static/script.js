@@ -4,7 +4,6 @@ class SplitCheque {
         this.people = [];
         this.editingExpenseId = null;
         this.initializeEventListeners();
-        this.initializeFloatingNav();
     }
 
     initializeEventListeners() {
@@ -13,42 +12,12 @@ class SplitCheque {
         const editForm = document.getElementById('edit-expense-form');
         const calculateBtn = document.getElementById('calculate-btn');
         const clearBtn = document.getElementById('clear-btn');
-        const paidByInput = document.getElementById('paid-by');
-        const editPaidByInput = document.getElementById('edit-paid-by');
-        const participantModeInputs = document.querySelectorAll('input[name="participant-mode"]');
-        const editParticipantModeInputs = document.querySelectorAll('input[name="edit-participant-mode"]');
 
         personForm.addEventListener('submit', (e) => this.handleAddPerson(e));
         expenseForm.addEventListener('submit', (e) => this.handleAddExpense(e));
         editForm.addEventListener('submit', (e) => this.handleEditExpense(e));
         calculateBtn.addEventListener('click', () => this.calculateSettlement());
         clearBtn.addEventListener('click', () => this.clearAll());
-        
-        // Autocomplete for paid-by inputs
-        paidByInput.addEventListener('input', (e) => this.handlePaidByInput(e, 'paid-by-suggestions'));
-        paidByInput.addEventListener('keydown', (e) => this.handlePaidByKeydown(e, 'paid-by-suggestions'));
-        paidByInput.addEventListener('blur', () => this.hidePaidBySuggestions('paid-by-suggestions'));
-        
-        editPaidByInput.addEventListener('input', (e) => this.handlePaidByInput(e, 'edit-paid-by-suggestions'));
-        editPaidByInput.addEventListener('keydown', (e) => this.handlePaidByKeydown(e, 'edit-paid-by-suggestions'));
-        editPaidByInput.addEventListener('blur', () => this.hidePaidBySuggestions('edit-paid-by-suggestions'));
-        
-        // Participant mode change
-        participantModeInputs.forEach(input => {
-            input.addEventListener('change', (e) => this.handleParticipantModeChange(e));
-        });
-        
-        editParticipantModeInputs.forEach(input => {
-            input.addEventListener('change', (e) => this.handleEditParticipantModeChange(e));
-        });
-        
-        // Close suggestions when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.form-group')) {
-                this.hidePaidBySuggestions('paid-by-suggestions');
-                this.hidePaidBySuggestions('edit-paid-by-suggestions');
-            }
-        });
     }
 
     handleAddPerson(e) {
@@ -70,95 +39,6 @@ class SplitCheque {
         this.renderPeople();
         this.updateSelectors();
         this.clearPersonForm();
-    }
-
-    handlePaidByInput(e, suggestionContainerId = 'paid-by-suggestions') {
-        const input = e.target.value.trim();
-        const inputLower = input.toLowerCase();
-        
-        if (input.length === 0) {
-            this.hidePaidBySuggestions(suggestionContainerId);
-            return;
-        }
-        
-        const suggestions = this.people.filter(person => 
-            person.toLowerCase().includes(inputLower)
-        );
-        
-        this.showPaidBySuggestions(suggestions, suggestionContainerId);
-    }
-
-    handlePaidByKeydown(e, suggestionContainerId = 'paid-by-suggestions') {
-        const suggestionsContainer = document.getElementById(suggestionContainerId);
-        const suggestions = suggestionsContainer.querySelectorAll('.suggestion-item');
-        
-        if (e.key === 'ArrowDown') {
-            e.preventDefault();
-            this.navigateSuggestions(suggestions, 'down');
-        } else if (e.key === 'ArrowUp') {
-            e.preventDefault();
-            this.navigateSuggestions(suggestions, 'up');
-        } else if (e.key === 'Enter') {
-            const activeSuggestion = suggestionsContainer.querySelector('.suggestion-item.active');
-            if (activeSuggestion) {
-                e.preventDefault();
-                this.selectPaidBySuggestion(activeSuggestion.textContent, suggestionContainerId);
-            }
-        } else if (e.key === 'Escape') {
-            this.hidePaidBySuggestions(suggestionContainerId);
-        }
-    }
-
-    navigateSuggestions(suggestions, direction) {
-        const activeIndex = Array.from(suggestions).findIndex(item => item.classList.contains('active'));
-        
-        suggestions.forEach(item => item.classList.remove('active'));
-        
-        let newIndex;
-        if (direction === 'down') {
-            newIndex = activeIndex < suggestions.length - 1 ? activeIndex + 1 : 0;
-        } else {
-            newIndex = activeIndex > 0 ? activeIndex - 1 : suggestions.length - 1;
-        }
-        
-        if (suggestions[newIndex]) {
-            suggestions[newIndex].classList.add('active');
-        }
-    }
-
-    showPaidBySuggestions(suggestions, suggestionContainerId = 'paid-by-suggestions') {
-        const container = document.getElementById(suggestionContainerId);
-        
-        if (suggestions.length === 0) {
-            container.style.display = 'none';
-            return;
-        }
-        
-        container.innerHTML = suggestions.map(person => `
-            <div class="suggestion-item" onclick="app.selectPaidBySuggestion('${person}', '${suggestionContainerId}')">${person}</div>
-        `).join('');
-        
-        container.style.display = 'block';
-    }
-
-    selectPaidBySuggestion(person, suggestionContainerId = 'paid-by-suggestions') {
-        const inputId = suggestionContainerId === 'edit-paid-by-suggestions' ? 'edit-paid-by' : 'paid-by';
-        document.getElementById(inputId).value = person;
-        this.hidePaidBySuggestions(suggestionContainerId);
-    }
-
-    hidePaidBySuggestions(suggestionContainerId = 'paid-by-suggestions') {
-        document.getElementById(suggestionContainerId).style.display = 'none';
-    }
-
-    handleParticipantModeChange(e) {
-        const mode = e.target.value;
-        this.updateParticipantCheckboxes(mode);
-    }
-
-    handleEditParticipantModeChange(e) {
-        const mode = e.target.value;
-        this.updateEditParticipantCheckboxes(mode);
     }
 
     removePerson(name) {
@@ -195,53 +75,49 @@ class SplitCheque {
     }
 
     updateSelectors() {
+        // Update paid-by selector
+        const paidBySelect = document.getElementById('paid-by');
+        const editPaidBySelect = document.getElementById('edit-paid-by');
+        
+        const options = this.people.map(person => 
+            `<option value="${person}">${person}</option>`
+        ).join('');
+        
+        paidBySelect.innerHTML = `<option value="">Select who paid</option>${options}`;
+        editPaidBySelect.innerHTML = `<option value="">Select who paid</option>${options}`;
+        
         // Update participants checkboxes
-        const currentMode = document.querySelector('input[name="participant-mode"]:checked').value;
-        this.updateParticipantCheckboxes(currentMode);
+        this.updateParticipantCheckboxes();
         
         // Update add expense button state
         document.getElementById('add-expense-btn').disabled = this.people.length === 0;
     }
 
-    updateParticipantCheckboxes(mode = 'include') {
+    updateParticipantCheckboxes() {
         const container = document.getElementById('participants-checkboxes');
-        
-        if (this.people.length === 0) {
-            container.innerHTML = '<p class="no-people-message">Add people above first</p>';
-            return;
-        }
-        
-        // For include mode, check all by default; for exclude mode, check none by default
-        const defaultChecked = mode === 'include';
-        
-        const checkboxes = this.people.map(person => `
-            <div class="checkbox-item">
-                <input type="checkbox" id="participant-${person}" name="participants" value="${person}" ${defaultChecked ? 'checked' : ''}>
-                <label for="participant-${person}">${person}</label>
-            </div>
-        `).join('');
-        
-        container.innerHTML = checkboxes;
-    }
-
-    updateEditParticipantCheckboxes(mode = 'include') {
         const editContainer = document.getElementById('edit-participants-checkboxes');
         
         if (this.people.length === 0) {
+            container.innerHTML = '<p class="no-people-message">Add people above first</p>';
             editContainer.innerHTML = '<p class="no-people-message">Add people above first</p>';
             return;
         }
         
-        // For include mode, check all by default; for exclude mode, check none by default
-        const defaultChecked = mode === 'include';
+        const checkboxes = this.people.map(person => `
+            <div class="checkbox-item">
+                <input type="checkbox" id="participant-${person}" name="participants" value="${person}">
+                <label for="participant-${person}">${person}</label>
+            </div>
+        `).join('');
         
         const editCheckboxes = this.people.map(person => `
             <div class="checkbox-item">
-                <input type="checkbox" id="edit-participant-${person}" name="edit-participants" value="${person}" ${defaultChecked ? 'checked' : ''}>
+                <input type="checkbox" id="edit-participant-${person}" name="edit-participants" value="${person}">
                 <label for="edit-participant-${person}">${person}</label>
             </div>
         `).join('');
         
+        container.innerHTML = checkboxes;
         editContainer.innerHTML = editCheckboxes;
     }
 
@@ -261,29 +137,13 @@ class SplitCheque {
         const description = document.getElementById('expense-description').value;
         const amount = parseFloat(document.getElementById('expense-amount').value);
         const paidBy = document.getElementById('paid-by').value;
-        const mode = document.querySelector('input[name="participant-mode"]:checked').value;
-        
-        if (!paidBy || !this.people.includes(paidBy)) {
-            alert('Please select a valid person who paid');
-            return;
-        }
-        
-        let participants;
-        if (mode === 'include') {
-            // Include mode: get checked participants
-            participants = this.getSelectedParticipants();
-        } else {
-            // Exclude mode: get all people except unchecked ones
-            const excludedParticipants = this.getSelectedParticipants();
-            participants = this.people.filter(person => !excludedParticipants.includes(person));
-        }
+        const participants = this.getSelectedParticipants();
         
         if (participants.length === 0) {
-            alert('Please ensure at least one participant is selected');
+            alert('Please select at least one participant');
             return;
         }
         
-        // Always include the payer in participants
         if (!participants.includes(paidBy)) {
             participants.push(paidBy);
         }
@@ -308,29 +168,13 @@ class SplitCheque {
         const description = document.getElementById('edit-expense-description').value;
         const amount = parseFloat(document.getElementById('edit-expense-amount').value);
         const paidBy = document.getElementById('edit-paid-by').value;
-        const mode = document.querySelector('input[name="edit-participant-mode"]:checked').value;
-        
-        if (!paidBy || !this.people.includes(paidBy)) {
-            alert('Please select a valid person who paid');
-            return;
-        }
-        
-        let participants;
-        if (mode === 'include') {
-            // Include mode: get checked participants
-            participants = this.getSelectedEditParticipants();
-        } else {
-            // Exclude mode: get all people except unchecked ones
-            const excludedParticipants = this.getSelectedEditParticipants();
-            participants = this.people.filter(person => !excludedParticipants.includes(person));
-        }
+        const participants = this.getSelectedEditParticipants();
         
         if (participants.length === 0) {
-            alert('Please ensure at least one participant is selected');
+            alert('Please select at least one participant');
             return;
         }
         
-        // Always include the payer in participants
         if (!participants.includes(paidBy)) {
             participants.push(paidBy);
         }
@@ -363,31 +207,10 @@ class SplitCheque {
         document.getElementById('edit-expense-amount').value = expense.amount;
         document.getElementById('edit-paid-by').value = expense.paidBy;
         
-        // Set up the edit participant checkboxes
-        this.updateEditParticipantCheckboxes('include');
-        
-        // Set the appropriate mode and check/uncheck participants
-        const allPeople = this.people;
-        const participantsSet = new Set(expense.participants);
-        
-        // Determine if this is more like include or exclude mode
-        const includedCount = expense.participants.length;
-        const totalCount = allPeople.length;
-        
-        if (includedCount >= totalCount / 2) {
-            // More people included than excluded - use include mode
-            document.querySelector('input[name="edit-participant-mode"][value="include"]').checked = true;
-            document.querySelectorAll('input[name="edit-participants"]').forEach(checkbox => {
-                checkbox.checked = participantsSet.has(checkbox.value);
-            });
-        } else {
-            // More people excluded than included - use exclude mode
-            document.querySelector('input[name="edit-participant-mode"][value="exclude"]').checked = true;
-            this.updateEditParticipantCheckboxes('exclude');
-            document.querySelectorAll('input[name="edit-participants"]').forEach(checkbox => {
-                checkbox.checked = !participantsSet.has(checkbox.value);
-            });
-        }
+        // Check the appropriate participants
+        document.querySelectorAll('input[name="edit-participants"]').forEach(checkbox => {
+            checkbox.checked = expense.participants.includes(checkbox.value);
+        });
         
         // Show modal
         document.getElementById('edit-modal').style.display = 'flex';
@@ -399,14 +222,10 @@ class SplitCheque {
 
     clearExpenseForm() {
         document.getElementById('expense-form').reset();
-        document.getElementById('paid-by').value = '';
-        
-        // Reset to include mode and update checkboxes
-        document.querySelector('input[name="participant-mode"][value="include"]').checked = true;
-        this.updateParticipantCheckboxes('include');
-        
-        // Hide autocomplete suggestions
-        this.hidePaidBySuggestions();
+        // Uncheck all participant checkboxes
+        document.querySelectorAll('input[name="participants"]').forEach(checkbox => {
+            checkbox.checked = false;
+        });
     }
 
     renderExpenses() {
@@ -434,16 +253,6 @@ class SplitCheque {
     closeEditModal() {
         document.getElementById('edit-modal').style.display = 'none';
         this.editingExpenseId = null;
-        
-        // Clear the edit form
-        document.getElementById('edit-expense-form').reset();
-        document.getElementById('edit-paid-by').value = '';
-        
-        // Reset to include mode
-        document.querySelector('input[name="edit-participant-mode"][value="include"]').checked = true;
-        
-        // Hide autocomplete suggestions
-        this.hidePaidBySuggestions('edit-paid-by-suggestions');
     }
 
     deleteExpense(id) {
@@ -631,11 +440,6 @@ class SplitCheque {
 
         // Scroll to results
         resultsSection.scrollIntoView({ behavior: 'smooth' });
-        
-        // Update floating nav to show results section as active
-        setTimeout(() => {
-            this.updateActiveNavItem();
-        }, 500);
     }
 
     displayBalances(summary) {
@@ -691,112 +495,6 @@ class SplitCheque {
 
     hideResults() {
         document.getElementById('results-section').style.display = 'none';
-    }
-
-    initializeFloatingNav() {
-        const floatingNav = document.getElementById('floating-nav');
-        const scrollTopBtn = document.getElementById('scroll-top');
-        const navItems = document.querySelectorAll('.nav-item');
-        
-        // Show/hide floating nav and scroll button based on scroll position
-        let ticking = false;
-        
-        const updateNavVisibility = () => {
-            const scrollY = window.scrollY;
-            const windowHeight = window.innerHeight;
-            const documentHeight = document.documentElement.scrollHeight;
-            
-            // Show nav after scrolling 100px
-            if (scrollY > 100) {
-                floatingNav.classList.add('visible');
-                scrollTopBtn.classList.add('visible');
-            } else {
-                floatingNav.classList.remove('visible');
-                scrollTopBtn.classList.remove('visible');
-            }
-            
-            // Update active nav item based on scroll position
-            this.updateActiveNavItem();
-            
-            ticking = false;
-        };
-        
-        const requestNavUpdate = () => {
-            if (!ticking) {
-                requestAnimationFrame(updateNavVisibility);
-                ticking = true;
-            }
-        };
-        
-        window.addEventListener('scroll', requestNavUpdate);
-        
-        // Handle nav item clicks
-        navItems.forEach(item => {
-            item.addEventListener('click', (e) => {
-                e.preventDefault();
-                const targetId = item.getAttribute('href').substring(1);
-                const targetElement = document.getElementById(targetId);
-                
-                if (targetElement) {
-                    const headerOffset = 20;
-                    const elementPosition = targetElement.offsetTop;
-                    const offsetPosition = elementPosition - headerOffset;
-                    
-                    window.scrollTo({
-                        top: offsetPosition,
-                        behavior: 'smooth'
-                    });
-                }
-            });
-        });
-        
-        // Handle scroll to top button
-        scrollTopBtn.addEventListener('click', () => {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-        
-        // Initial call to set correct visibility
-        updateNavVisibility();
-        
-        // For mobile, show nav immediately if content is long enough
-        if (window.innerWidth <= 768) {
-            setTimeout(() => {
-                floatingNav.classList.add('visible');
-            }, 1000);
-        }
-    }
-    
-    updateActiveNavItem() {
-        const sections = ['top', 'people', 'expenses', 'results'];
-        const navItems = document.querySelectorAll('.nav-item');
-        const scrollY = window.scrollY;
-        
-        let activeSection = 'top';
-        
-        sections.forEach(sectionId => {
-            const element = document.getElementById(sectionId);
-            if (element) {
-                const rect = element.getBoundingClientRect();
-                const elementTop = rect.top + scrollY;
-                
-                if (scrollY >= elementTop - 100) {
-                    activeSection = sectionId;
-                }
-            }
-        });
-        
-        // Update active nav item
-        navItems.forEach(item => {
-            const section = item.getAttribute('data-section');
-            if (section === activeSection) {
-                item.classList.add('active');
-            } else {
-                item.classList.remove('active');
-            }
-        });
     }
 }
 
