@@ -15,8 +15,10 @@ class SplitCheque {
         const clearBtn = document.getElementById('clear-btn');
         const paidByInput = document.getElementById('paid-by');
         const editPaidByInput = document.getElementById('edit-paid-by');
-        const selectAllParticipants = document.getElementById('select-all-participants');
-        const selectAllEditParticipants = document.getElementById('select-all-edit-participants');
+        const expenseDescriptionInput = document.getElementById('expense-description');
+        const editExpenseDescriptionInput = document.getElementById('edit-expense-description');
+        const selectAllCheckbox = document.getElementById('select-all-participants');
+        const selectAllEditCheckbox = document.getElementById('select-all-edit-participants');
 
         personForm.addEventListener('submit', (e) => this.handleAddPerson(e));
         expenseForm.addEventListener('submit', (e) => this.handleAddExpense(e));
@@ -24,24 +26,47 @@ class SplitCheque {
         calculateBtn.addEventListener('click', () => this.calculateSettlement());
         clearBtn.addEventListener('click', () => this.clearAll());
         
+        // Select All functionality
+        selectAllCheckbox.addEventListener('change', (e) => this.handleSelectAll(e, 'participants'));
+        selectAllEditCheckbox.addEventListener('change', (e) => this.handleSelectAll(e, 'edit-participants'));
+        
         // Autocomplete for paid-by inputs
         paidByInput.addEventListener('input', (e) => this.handlePaidByInput(e, 'paid-by-suggestions'));
         paidByInput.addEventListener('keydown', (e) => this.handlePaidByKeydown(e, 'paid-by-suggestions'));
-        paidByInput.addEventListener('blur', () => this.hidePaidBySuggestions('paid-by-suggestions'));
+        paidByInput.addEventListener('blur', (e) => {
+            // Delay hiding to allow clicks on suggestions
+            setTimeout(() => this.hidePaidBySuggestions('paid-by-suggestions'), 150);
+        });
         
         editPaidByInput.addEventListener('input', (e) => this.handlePaidByInput(e, 'edit-paid-by-suggestions'));
         editPaidByInput.addEventListener('keydown', (e) => this.handlePaidByKeydown(e, 'edit-paid-by-suggestions'));
-        editPaidByInput.addEventListener('blur', () => this.hidePaidBySuggestions('edit-paid-by-suggestions'));
+        editPaidByInput.addEventListener('blur', (e) => {
+            // Delay hiding to allow clicks on suggestions
+            setTimeout(() => this.hidePaidBySuggestions('edit-paid-by-suggestions'), 150);
+        });
         
-        // Select all participants functionality
-        selectAllParticipants.addEventListener('click', () => this.handleSelectAllParticipants());
-        selectAllEditParticipants.addEventListener('click', () => this.handleSelectAllEditParticipants());
+        // Autocomplete for expense descriptions
+        expenseDescriptionInput.addEventListener('input', (e) => this.handleDescriptionInput(e, 'description-suggestions'));
+        expenseDescriptionInput.addEventListener('keydown', (e) => this.handleDescriptionKeydown(e, 'description-suggestions'));
+        expenseDescriptionInput.addEventListener('blur', (e) => {
+            // Delay hiding to allow clicks on suggestions
+            setTimeout(() => this.hideDescriptionSuggestions('description-suggestions'), 150);
+        });
+        
+        editExpenseDescriptionInput.addEventListener('input', (e) => this.handleDescriptionInput(e, 'edit-description-suggestions'));
+        editExpenseDescriptionInput.addEventListener('keydown', (e) => this.handleDescriptionKeydown(e, 'edit-description-suggestions'));
+        editExpenseDescriptionInput.addEventListener('blur', (e) => {
+            // Delay hiding to allow clicks on suggestions
+            setTimeout(() => this.hideDescriptionSuggestions('edit-description-suggestions'), 150);
+        });
         
         // Close suggestions when clicking outside
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.form-group')) {
                 this.hidePaidBySuggestions('paid-by-suggestions');
                 this.hidePaidBySuggestions('edit-paid-by-suggestions');
+                this.hideDescriptionSuggestions('description-suggestions');
+                this.hideDescriptionSuggestions('edit-description-suggestions');
             }
         });
     }
@@ -130,7 +155,9 @@ class SplitCheque {
         }
         
         container.innerHTML = suggestions.map(person => `
-            <div class="suggestion-item" onclick="app.selectPaidBySuggestion('${person}', '${suggestionContainerId}')">${person}</div>
+            <div class="suggestion-item" 
+                 onmousedown="app.selectPaidBySuggestion('${person}', '${suggestionContainerId}')"
+                 onclick="event.preventDefault()">${person}</div>
         `).join('');
         
         container.style.display = 'block';
@@ -189,6 +216,7 @@ class SplitCheque {
 
     updateParticipantCheckboxes() {
         const container = document.getElementById('participants-checkboxes');
+        const selectAllCheckbox = document.getElementById('select-all-participants');
         
         if (this.people.length === 0) {
             container.innerHTML = '<p class="no-people-message">Add people above first</p>';
@@ -205,18 +233,19 @@ class SplitCheque {
         
         container.innerHTML = checkboxes;
         
-        // Add event listeners to individual checkboxes
-        const participantCheckboxes = document.querySelectorAll('input[name="participants"]');
-        participantCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', () => this.updateSelectAllButton('select-all-participants'));
-        });
+        // Set select all checkbox to checked
+        selectAllCheckbox.checked = true;
         
-        // Update select all button
-        this.updateSelectAllButton('select-all-participants');
+        // Add event listeners to individual checkboxes to update select all state
+        const individualCheckboxes = document.querySelectorAll('input[name="participants"]');
+        individualCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', () => this.updateSelectAllState('participants'));
+        });
     }
 
     updateEditParticipantCheckboxes() {
         const editContainer = document.getElementById('edit-participants-checkboxes');
+        const selectAllEditCheckbox = document.getElementById('select-all-edit-participants');
         
         if (this.people.length === 0) {
             editContainer.innerHTML = '<p class="no-people-message">Add people above first</p>';
@@ -233,14 +262,14 @@ class SplitCheque {
         
         editContainer.innerHTML = editCheckboxes;
         
-        // Add event listeners to individual checkboxes
-        const editParticipantCheckboxes = document.querySelectorAll('input[name="edit-participants"]');
-        editParticipantCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', () => this.updateSelectAllButton('select-all-edit-participants'));
-        });
+        // Set select all checkbox to checked
+        selectAllEditCheckbox.checked = true;
         
-        // Update select all button
-        this.updateSelectAllButton('select-all-edit-participants');
+        // Add event listeners to individual checkboxes to update select all state
+        const individualCheckboxes = document.querySelectorAll('input[name="edit-participants"]');
+        individualCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', () => this.updateSelectAllState('edit-participants'));
+        });
     }
 
     getSelectedParticipants() {
@@ -350,8 +379,8 @@ class SplitCheque {
             checkbox.checked = participantsSet.has(checkbox.value);
         });
         
-        // Update select all button
-        this.updateSelectAllButton('select-all-edit-participants');
+        // Update the select all checkbox state
+        this.updateSelectAllState('edit-participants');
         
         // Show modal
         document.getElementById('edit-modal').style.display = 'flex';
@@ -370,6 +399,7 @@ class SplitCheque {
         
         // Hide autocomplete suggestions
         this.hidePaidBySuggestions('paid-by-suggestions');
+        this.hideDescriptionSuggestions('description-suggestions');
     }
 
     renderExpenses() {
@@ -404,6 +434,7 @@ class SplitCheque {
         
         // Hide autocomplete suggestions
         this.hidePaidBySuggestions('edit-paid-by-suggestions');
+        this.hideDescriptionSuggestions('edit-description-suggestions');
     }
 
     deleteExpense(id) {
@@ -552,19 +583,22 @@ class SplitCheque {
                 const from = amounts[i].balance < 0 ? amounts[i].name : amounts[bestMatch].name;
                 const to = amounts[i].balance > 0 ? amounts[i].name : amounts[bestMatch].name;
                 
+                // Round to nearest dollar for cleaner settlements
+                const roundedAmount = Math.round(bestAmount);
+                
                 transactions.push({
                     from: from,
                     to: to,
-                    amount: Math.round(bestAmount * 100) / 100
+                    amount: roundedAmount
                 });
                 
-                // Update balances
+                // Update balances using the rounded amount
                 if (amounts[i].balance > 0) {
-                    amounts[i].balance -= bestAmount;
-                    amounts[bestMatch].balance += bestAmount;
+                    amounts[i].balance -= roundedAmount;
+                    amounts[bestMatch].balance += roundedAmount;
                 } else {
-                    amounts[i].balance += bestAmount;
-                    amounts[bestMatch].balance -= bestAmount;
+                    amounts[i].balance += roundedAmount;
+                    amounts[bestMatch].balance -= roundedAmount;
                 }
             } else {
                 i++;
@@ -636,7 +670,7 @@ class SplitCheque {
         const transactionItems = transactions.map((transaction, index) => `
             <div class="transaction-item">
                 <p><strong>${transaction.from}</strong> pays <strong>${transaction.to}</strong></p>
-                <p class="transaction-amount">$${transaction.amount.toFixed(2)}</p>
+                <p class="transaction-amount">$${transaction.amount.toFixed(0)}</p>
             </div>
         `).join('');
         
@@ -644,6 +678,7 @@ class SplitCheque {
             <div class="optimization-note">
                 <p>✨ <strong>Optimized for minimal transactions!</strong> Instead of everyone paying everyone else, 
                 these ${transactions.length} transaction${transactions.length > 1 ? 's' : ''} will settle all debts.</p>
+                <p><em>💡 Amounts are rounded to the nearest dollar for convenience.</em></p>
             </div>
             ${transactionItems}
         `;
@@ -759,60 +794,177 @@ class SplitCheque {
         });
     }
 
-    handleSelectAllParticipants() {
-        const checkboxes = document.querySelectorAll('input[name="participants"]');
-        const button = document.getElementById('select-all-participants');
+    handleSelectAll(e, participantType) {
+        const isChecked = e.target.checked;
+        const checkboxes = document.querySelectorAll(`input[name="${participantType}"]`);
         
-        // Check if all are currently selected
-        const allSelected = Array.from(checkboxes).every(cb => cb.checked);
-        
-        // Toggle all checkboxes
         checkboxes.forEach(checkbox => {
-            checkbox.checked = !allSelected;
+            checkbox.checked = isChecked;
         });
-        
-        // Update button text and style
-        this.updateSelectAllButton('select-all-participants');
     }
 
-    handleSelectAllEditParticipants() {
-        const checkboxes = document.querySelectorAll('input[name="edit-participants"]');
-        const button = document.getElementById('select-all-edit-participants');
+    updateSelectAllState(participantType) {
+        const checkboxes = document.querySelectorAll(`input[name="${participantType}"]`);
+        const selectAllCheckbox = document.getElementById(
+            participantType === 'participants' ? 'select-all-participants' : 'select-all-edit-participants'
+        );
         
-        // Check if all are currently selected
-        const allSelected = Array.from(checkboxes).every(cb => cb.checked);
+        const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+        const someChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
         
-        // Toggle all checkboxes
-        checkboxes.forEach(checkbox => {
-            checkbox.checked = !allSelected;
-        });
-        
-        // Update button text and style
-        this.updateSelectAllButton('select-all-edit-participants');
+        if (allChecked) {
+            selectAllCheckbox.checked = true;
+            selectAllCheckbox.indeterminate = false;
+        } else if (someChecked) {
+            selectAllCheckbox.checked = false;
+            selectAllCheckbox.indeterminate = true;
+        } else {
+            selectAllCheckbox.checked = false;
+            selectAllCheckbox.indeterminate = false;
+        }
     }
 
-    updateSelectAllButton(buttonId) {
-        const button = document.getElementById(buttonId);
-        const checkboxes = buttonId === 'select-all-participants' ? 
-            document.querySelectorAll('input[name="participants"]') : 
-            document.querySelectorAll('input[name="edit-participants"]');
+    // Common expense categories for autocomplete
+    getExpenseCategories() {
+        return [
+            'Food & Dining',
+            'Restaurant',
+            'Fast Food',
+            'Coffee & Tea',
+            'Groceries',
+            'Transportation',
+            'Gas',
+            'Taxi/Uber',
+            'Public Transport',
+            'Parking',
+            'Entertainment',
+            'Movies',
+            'Concert',
+            'Sports Event',
+            'Shopping',
+            'Clothing',
+            'Electronics',
+            'Books',
+            'Travel',
+            'Hotel',
+            'Flight',
+            'Accommodation',
+            'Utilities',
+            'Internet',
+            'Phone Bill',
+            'Healthcare',
+            'Pharmacy',
+            'Doctor Visit',
+            'Miscellaneous',
+            'Gift',
+            'Subscription',
+            'Insurance'
+        ];
+    }
+
+    handleDescriptionInput(e, suggestionContainerId = 'description-suggestions') {
+        const input = e.target.value.trim();
+        const inputLower = input.toLowerCase();
         
-        if (checkboxes.length === 0) {
-            button.textContent = 'Select All';
-            button.classList.remove('deselect');
+        if (input.length < 2) {
+            this.hideDescriptionSuggestions(suggestionContainerId);
             return;
         }
         
-        const allSelected = Array.from(checkboxes).every(cb => cb.checked);
+        const categories = this.getExpenseCategories();
+        const suggestions = categories.filter(category => 
+            category.toLowerCase().includes(inputLower)
+        );
         
-        if (allSelected) {
-            button.textContent = 'Deselect All';
-            button.classList.add('deselect');
-        } else {
-            button.textContent = 'Select All';
-            button.classList.remove('deselect');
+        this.showDescriptionSuggestions(suggestions, suggestionContainerId);
+    }
+
+    handleDescriptionKeydown(e, suggestionContainerId = 'description-suggestions') {
+        const suggestionsContainer = document.getElementById(suggestionContainerId);
+        const suggestions = suggestionsContainer.querySelectorAll('.suggestion-item');
+        
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            this.navigateSuggestions(suggestions, 'down');
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            this.navigateSuggestions(suggestions, 'up');
+        } else if (e.key === 'Enter') {
+            const activeSuggestion = suggestionsContainer.querySelector('.suggestion-item.active');
+            if (activeSuggestion) {
+                e.preventDefault();
+                this.selectDescriptionSuggestion(activeSuggestion.textContent, suggestionContainerId);
+            }
+        } else if (e.key === 'Escape') {
+            this.hideDescriptionSuggestions(suggestionContainerId);
         }
     }
+
+    showDescriptionSuggestions(suggestions, suggestionContainerId = 'description-suggestions') {
+        const container = document.getElementById(suggestionContainerId);
+        
+        if (suggestions.length === 0) {
+            container.style.display = 'none';
+            return;
+        }
+        
+        container.innerHTML = suggestions.map(category => `
+            <div class="suggestion-item" 
+                 onmousedown="app.selectDescriptionSuggestion('${category}', '${suggestionContainerId}')"
+                 onclick="event.preventDefault()">${category}</div>
+        `).join('');
+        
+        container.style.display = 'block';
+    }
+
+    selectDescriptionSuggestion(category, suggestionContainerId = 'description-suggestions') {
+        const inputId = suggestionContainerId === 'edit-description-suggestions' ? 'edit-expense-description' : 'expense-description';
+        document.getElementById(inputId).value = category;
+        this.hideDescriptionSuggestions(suggestionContainerId);
+    }
+
+    hideDescriptionSuggestions(suggestionContainerId = 'description-suggestions') {
+        document.getElementById(suggestionContainerId).style.display = 'none';
+    }
+
+    // Ad management methods
+    initializeAds() {
+        // This method can be called to initialize ads
+        // For now, just remove the placeholder if real ads are loaded
+        const placeholder = document.querySelector('.ad-placeholder');
+        if (placeholder && window.adsbygoogle) {
+            // Example for Google AdSense
+            // placeholder.parentNode.innerHTML = '<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXX" data-ad-slot="XXXXXXXX" data-ad-format="auto"></ins>';
+            // (adsbygoogle = window.adsbygoogle || []).push({});
+        }
+    }
+
+    loadAdMobAd() {
+        // For AdMob integration (if using a hybrid approach)
+        // This would typically be called from a mobile app context
+        const adContainer = document.getElementById('ad-container');
+        if (adContainer && window.admob) {
+            // AdMob integration code would go here
+            console.log('AdMob integration ready');
+        }
+    }
+
+    hideAds() {
+        // Method to hide ads if needed
+        const adBanner = document.getElementById('ad-banner');
+        if (adBanner) {
+            adBanner.style.display = 'none';
+        }
+    }
+
+    showAds() {
+        // Method to show ads
+        const adBanner = document.getElementById('ad-banner');
+        if (adBanner) {
+            adBanner.style.display = 'flex';
+        }
+    }
+
 }
 
 // Initialize the app

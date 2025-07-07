@@ -5,12 +5,15 @@ A smart bill-splitting app that calculates the optimal way to settle debts when 
 ## Features
 
 - **Add People First**: Manage participants with an intuitive interface
-- **Smart Expense Tracking**: Select who paid and who participated with dropdowns and checkboxes
+- **Smart Expense Tracking**: Select who paid and who participated with "Select All" checkboxes
+- **Autocomplete**: Smart suggestions for "Paid By" field and expense descriptions
 - **Edit & Delete**: Full CRUD operations for expenses
 - **Optimal Debt Settlement**: Minimizes the number of transactions needed using advanced algorithms
 - **Beautiful UI**: Modern, responsive design that works on all devices
+- **Mobile-Friendly**: Floating navigation bar and touch-optimized interface
 - **Real-time Calculations**: Instant results as you add expenses
 - **Individual Balances**: Clear visualization of who owes money and who is owed money
+- **Stripe Donation**: Support the project with integrated Stripe donation link
 
 ## 🚀 Quick Deploy to Netlify
 
@@ -51,8 +54,9 @@ Then open `http://localhost:8000`
 - Remove people by clicking the × on their tag
 
 ### 2. **Track Expenses**
-- Select who paid from a dropdown
-- Choose participants with checkboxes
+- Type expense descriptions with autocomplete suggestions for common categories
+- Select who paid with autocomplete for faster entry
+- Use "Select All" checkbox to quickly select all participants
 - Edit or delete any expense later
 
 ### 3. **Calculate Settlement**

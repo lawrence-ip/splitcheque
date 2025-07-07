@@ -15,6 +15,17 @@
             <div class="section-anchor" id="top"></div>
             <h1>💰 SplitCheque</h1>
             <p>Split bills and settle debts the smart way</p>
+            
+            <!-- Ad Banner Container -->
+            <div id="ad-banner" class="ad-banner">
+                <!-- AdMob/AdSense ad will be inserted here -->
+                <div id="ad-container" class="ad-container">
+                    <!-- Placeholder for now - replace with actual ad code -->
+                    <div class="ad-placeholder">
+                        <span>Advertisement</span>
+                    </div>
+                </div>
+            </div>
         </header>
 
         <main>
@@ -38,7 +49,8 @@
                 <form id="expense-form">
                     <div class="form-group">
                         <label for="expense-description">Description</label>
-                        <input type="text" id="expense-description" placeholder="e.g., Dinner at Restaurant" required>
+                        <input type="text" id="expense-description" placeholder="e.g., Dinner at Restaurant" required autocomplete="off">
+                        <div id="description-suggestions" class="suggestions-dropdown"></div>
                     </div>
                     
                     <div class="form-group">
@@ -54,10 +66,11 @@
                     
                     <div class="form-group">
                         <label>Participants</label>
-                        <div class="participants-controls">
-                            <button type="button" id="select-all-participants" class="select-all-btn">
-                                Select All
-                            </button>
+                        <div class="select-all-container">
+                            <label class="select-all-label">
+                                <input type="checkbox" id="select-all-participants" checked>
+                                <span>Select All</span>
+                            </label>
                         </div>
                         <div id="participants-checkboxes" class="checkbox-group">
                             <p class="no-people-message">Add people above first</p>
@@ -86,7 +99,8 @@
                     <form id="edit-expense-form">
                         <div class="form-group">
                             <label for="edit-expense-description">Description</label>
-                            <input type="text" id="edit-expense-description" required>
+                            <input type="text" id="edit-expense-description" required autocomplete="off">
+                            <div id="edit-description-suggestions" class="suggestions-dropdown"></div>
                         </div>
                         
                         <div class="form-group">
@@ -102,10 +116,11 @@
                         
                         <div class="form-group">
                             <label>Participants</label>
-                            <div class="participants-controls">
-                                <button type="button" id="select-all-edit-participants" class="select-all-btn">
-                                    Select All
-                                </button>
+                            <div class="select-all-container">
+                                <label class="select-all-label">
+                                    <input type="checkbox" id="select-all-edit-participants" checked>
+                                    <span>Select All</span>
+                                </label>
                             </div>
                             <div id="edit-participants-checkboxes" class="checkbox-group">
                             </div>

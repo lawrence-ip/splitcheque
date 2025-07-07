@@ -651,6 +651,83 @@ button:disabled {
     padding: 15px 30px;
 }
 
+/* Select All Checkbox Styles */
+.select-all-container {
+    margin-bottom: 15px;
+    padding: 10px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.select-all-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    color: #4a5568;
+    transition: color 0.2s ease;
+}
+
+.select-all-label:hover {
+    color: #667eea;
+}
+
+.select-all-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #667eea;
+    border: 2px solid #d1d5db;
+    border-radius: 4px;
+    position: relative;
+}
+
+.select-all-label input[type="checkbox"]:checked {
+    background-color: #667eea;
+    border-color: #667eea;
+}
+
+.select-all-label input[type="checkbox"]:indeterminate {
+    background-color: #fbbf24;
+    border-color: #fbbf24;
+}
+
+.select-all-label span {
+    font-size: 0.95rem;
+    user-select: none;
+}
+
+/* Improve individual checkbox visibility */
+.checkbox-item input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    accent-color: #667eea;
+    border: 2px solid #d1d5db;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.checkbox-item input[type="checkbox"]:checked {
+    background-color: #667eea;
+    border-color: #667eea;
+}
+
+.checkbox-item label {
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    transition: color 0.2s ease;
+}
+
+.checkbox-item label:hover {
+    color: #667eea;
+}
+
 /* Autocomplete Suggestions */
 .suggestions-dropdown {
     position: absolute;
@@ -671,12 +748,14 @@ button:disabled {
     padding: 12px;
     cursor: pointer;
     border-bottom: 1px solid #f7fafc;
-    transition: background-color 0.2s ease;
+    transition: all 0.2s ease;
+    user-select: none;
 }
 
 .suggestion-item:hover,
 .suggestion-item.active {
-    background-color: #f7fafc;
+    background-color: #667eea;
+    color: white;
 }
 
 .suggestion-item:last-child {
@@ -988,47 +1067,6 @@ button:disabled {
     }
 }
 
-/* Participants Controls */
-.participants-controls {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-    padding: 8px 0;
-    border-bottom: 1px solid #e2e8f0;
-}
-
-.select-all-btn {
-    padding: 8px 16px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(102, 126, 234, 0.2);
-}
-
-.select-all-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
-}
-
-.select-all-btn:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(102, 126, 234, 0.2);
-}
-
-.select-all-btn.deselect {
-    background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
-    box-shadow: 0 2px 4px rgba(229, 62, 62, 0.2);
-}
-
-.select-all-btn.deselect:hover {
-    box-shadow: 0 4px 8px rgba(229, 62, 62, 0.3);
-}
-
 /* Checkbox group styling improvements */
 .checkbox-group {
     max-height: 200px;
@@ -1085,5 +1123,84 @@ button:disabled {
     
     .checkbox-item label {
         font-size: 1rem;
+    }
+}
+
+/* Ad Banner Styles */
+.ad-banner {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ad-container {
+    max-width: 100%;
+    text-align: center;
+}
+
+/* Placeholder styling - remove when adding real ads */
+.ad-placeholder {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px dashed rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    padding: 15px 20px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    min-height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.ad-placeholder:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Common ad banner sizes */
+.ad-banner .ad-leaderboard {
+    width: 728px;
+    height: 90px;
+    max-width: 100%;
+}
+
+.ad-banner .ad-banner-mobile {
+    width: 320px;
+    height: 50px;
+    max-width: 100%;
+}
+
+.ad-banner .ad-medium-rectangle {
+    width: 300px;
+    height: 250px;
+    max-width: 100%;
+}
+
+/* Responsive ad sizing */
+@media (max-width: 768px) {
+    .ad-banner .ad-leaderboard {
+        width: 320px;
+        height: 50px;
+    }
+    
+    .ad-placeholder {
+        min-height: 50px;
+        padding: 10px 15px;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .ad-banner {
+        margin-top: 15px;
+        margin-bottom: 5px;
+    }
+    
+    .ad-banner .ad-leaderboard {
+        width: 280px;
+        height: 50px;
     }
 }
