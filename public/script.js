@@ -522,7 +522,7 @@ class SplitCheque {
             people[person].balance = people[person].paid - people[person].owes;
         });
         
-        // Find the truly minimal number of transactions using a more sophisticated approach
+        // Find the truly minimal number of transactions
         const balances = {};
         Object.keys(people).forEach(person => {
             const balance = Math.round(people[person].balance * 100) / 100;
@@ -563,7 +563,7 @@ class SplitCheque {
         // Sort by balance (creditors first, then debtors)
         amounts.sort((a, b) => b.balance - a.balance);
         
-        // Use a greedy approach but with better optimization
+        // Use a greedy approach for optimal settlement
         let i = 0;
         let iterations = 0;
         const maxIterations = amounts.length * amounts.length; // Prevent infinite loops
@@ -609,19 +609,22 @@ class SplitCheque {
                 // Round to nearest dollar for cleaner settlements
                 const roundedAmount = Math.round(bestAmount);
                 
-                transactions.push({
-                    from: from,
-                    to: to,
-                    amount: roundedAmount
-                });
+                // Only add transaction if amount is meaningful
+                if (roundedAmount > 0) {
+                    transactions.push({
+                        from: from,
+                        to: to,
+                        amount: roundedAmount
+                    });
+                }
                 
-                // Update balances using the rounded amount
+                // Update balances using the actual amount (not rounded) for accurate calculation
                 if (amounts[i].balance > 0) {
-                    amounts[i].balance -= roundedAmount;
-                    amounts[bestMatch].balance += roundedAmount;
+                    amounts[i].balance -= bestAmount;
+                    amounts[bestMatch].balance += bestAmount;
                 } else {
-                    amounts[i].balance += roundedAmount;
-                    amounts[bestMatch].balance -= roundedAmount;
+                    amounts[i].balance += bestAmount;
+                    amounts[bestMatch].balance -= bestAmount;
                 }
             } else {
                 i++;
