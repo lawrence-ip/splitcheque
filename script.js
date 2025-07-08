@@ -473,11 +473,15 @@ class SplitCheque {
         }
 
         try {
+            console.log('Calculating settlement for expenses:', this.expenses);
             const result = this.calculateOptimalSettlement(this.expenses);
+            console.log('Settlement result:', result);
             this.displayResults(result);
         } catch (error) {
             console.error('Error calculating settlement:', error);
-            alert('Error calculating settlement. Please try again.');
+            console.error('Stack trace:', error.stack);
+            console.error('Expenses data:', this.expenses);
+            alert(`Error calculating settlement: ${error.message}. Please check the console for details.`);
         }
     }
 
@@ -486,7 +490,7 @@ class SplitCheque {
         const people = {};
         let totalExpenses = 0;
         
-        // Initialize people and calculate total expenses
+        // Initialize people based on expense participants only
         expenses.forEach(expense => {
             expense.participants.forEach(person => {
                 if (!people[person]) {
@@ -503,13 +507,18 @@ class SplitCheque {
             }
         });
         
-        // Calculate how much each person owes (equal split)
-        const totalPeople = Object.keys(people).length;
-        const perPersonShare = totalExpenses / totalPeople;
+        // Calculate individual shares for each expense based on participants
+        expenses.forEach(expense => {
+            const sharePerPerson = expense.amount / expense.participants.length;
+            expense.participants.forEach(person => {
+                if (people[person]) {
+                    people[person].owes += sharePerPerson;
+                }
+            });
+        });
         
         // Calculate net balance (positive = owed money, negative = owes money)
         Object.keys(people).forEach(person => {
-            people[person].owes = perPersonShare;
             people[person].balance = people[person].paid - people[person].owes;
         });
         
@@ -524,6 +533,10 @@ class SplitCheque {
         
         const transactions = this.minimizeTransactions(balances);
         
+        // Calculate per person share for display (average across all expenses)
+        const totalPeople = Object.keys(people).length;
+        const perPersonShare = totalExpenses / totalPeople;
+        
         return {
             summary: people,
             transactions: transactions,
@@ -536,6 +549,11 @@ class SplitCheque {
         const transactions = [];
         const people = Object.keys(balances);
         
+        // Safety check
+        if (people.length === 0) {
+            return transactions;
+        }
+        
         // Convert to array for easier manipulation
         const amounts = people.map(person => ({
             name: person,
@@ -547,7 +565,12 @@ class SplitCheque {
         
         // Use a greedy approach but with better optimization
         let i = 0;
-        while (i < amounts.length) {
+        let iterations = 0;
+        const maxIterations = amounts.length * amounts.length; // Prevent infinite loops
+        
+        while (i < amounts.length && iterations < maxIterations) {
+            iterations++;
+            
             if (Math.abs(amounts[i].balance) < 0.01) {
                 i++;
                 continue;
